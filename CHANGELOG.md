@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.5](https://github.com/traveloka/react-schema/compare/v3.4.5-alpha.0...v3.4.5) (2021-12-17)
+
+
+### Bug Fixes
+
+* Don't Pass form into Field Component ([#93](https://github.com/traveloka/react-schema/issues/93)) ([3e822bb](https://github.com/traveloka/react-schema/commit/3e822bba0cb818edc84be0a3ecd5437f62a2a023))
+
+
+
+
+
 ## [3.4.5-alpha.0](https://github.com/vanydeasy/react-schema/compare/v3.4.4...v3.4.5-alpha.0) (2021-02-25)
 
 

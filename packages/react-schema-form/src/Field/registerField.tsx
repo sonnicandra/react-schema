@@ -20,10 +20,10 @@ export default function registerField(
     }
 
     public render() {
-      const { form } = this.props;
+      const { form, ...restProps } = this.props;
       return (
         <WrapperComponent
-          {...this.props}
+          {...restProps}
           ref={(el: any) => el && this.handleRegisterField(el, form)}
           onChange={(value: any) => this.handleSubscribeOnChange(value, form)}
           onError={(error: any) => this.handleSubscribeOnError(error, form)}

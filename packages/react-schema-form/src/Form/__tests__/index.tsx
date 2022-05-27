@@ -18,16 +18,55 @@ describe("test Form", () => {
     });
   });
 
+  it("validation result should be consistent", () => {
+    const MAX_LENGTH = 5;
+    const maxLengthRule = (maxLength: number) => (value: string) => {
+      return value.length > maxLength
+        ? `Max length of ${maxLength} characters is reached.`
+        : null;
+    };
+
+    let form;
+    const testRenderer = TestRenderer.create(
+      <FormComponent fieldRef={(ref) => (form = ref)}>
+        <Field
+          name="description"
+          component={Input}
+          rules={[maxLengthRule(MAX_LENGTH)]}
+        />
+      </FormComponent>
+    );
+    const testInstance = testRenderer.root;
+    const description = testInstance.findByType(Input);
+
+    description.props.onChange("abc");
+    form.validate();
+    expect(form.hasError()).toBeFalsy();
+    expect(form.getErrorField("description")).toBeNull();
+
+    description.props.onChange("abcdef");
+    form.validate();
+    expect(form.hasError()).toBeTruthy();
+    expect(form.getErrorField("description")).toEqual(
+      "Max length of 5 characters is reached."
+    );
+
+    description.props.onChange("abcde");
+    form.validate();
+    expect(form.hasError()).toBeFalsy();
+    expect(form.getErrorField("description")).toBeNull();
+  });
+
   describe("test children as function", () => {
     it("should pass isDirty and hasError", () => {
       const testRenderer = TestRenderer.create(
-        <FormComponent>{state => <Input {...state} />}</FormComponent>
+        <FormComponent>{(state) => <Input {...state} />}</FormComponent>
       );
       const testInstance = testRenderer.root;
       expect(
         testInstance.findByProps({
           isDirty: false,
-          hasError: false
+          hasError: false,
         })
       ).toBeTruthy();
     });
@@ -45,8 +84,8 @@ describe("test Form", () => {
         }
       }
       const testRenderer = TestRenderer.create(
-        <FormComponent fieldRef={el => (form = el)}>
-          {state => (
+        <FormComponent fieldRef={(el) => (form = el)}>
+          {(state) => (
             <>
               <Field name="checked" component={CheckboxField} />
               <TComp isChecked={state.values.checked} />
@@ -73,8 +112,8 @@ describe("test Form", () => {
         }
       }
       const testRenderer = TestRenderer.create(
-        <FormComponent fieldRef={el => (form = el)}>
-          {state => (
+        <FormComponent fieldRef={(el) => (form = el)}>
+          {(state) => (
             <>
               <Field name="email" component={Input} />
               <Button {...state} />
@@ -89,7 +128,7 @@ describe("test Form", () => {
       expect(buttonEl.props.isDirty).toEqual(true);
       expect(buttonEl.props.hasError).toEqual(false);
       form.setValue({
-        email: undefined
+        email: undefined,
       });
       expect(buttonEl.props.isDirty).toEqual(false);
       expect(buttonEl.props.hasError).toEqual(false);
@@ -103,12 +142,12 @@ describe("test Form", () => {
         return null;
       }
     }
-    const rule = value => {
+    const rule = (value) => {
       return value !== "key" ? "invalid" : null;
     };
     const testRenderer = TestRenderer.create(
-      <FormComponent fieldRef={el => (form = el)}>
-        {state => (
+      <FormComponent fieldRef={(el) => (form = el)}>
+        {(state) => (
           <>
             <Field name="email" rules={rule} component={Input} />
             <Button {...state} />
@@ -124,7 +163,7 @@ describe("test Form", () => {
     expect(buttonEl.props.isDirty).toEqual(true);
     expect(buttonEl.props.hasError).toEqual(true);
     form.setValue({
-      email: "key"
+      email: "key",
     });
     expect(buttonEl.props.isDirty).toEqual(true);
     expect(buttonEl.props.hasError).toEqual(false);
@@ -143,8 +182,8 @@ describe("test Form", () => {
       }
     }
     const testRenderer = TestRenderer.create(
-      <FormComponent fieldRef={el => (form = el)}>
-        {state => (
+      <FormComponent fieldRef={(el) => (form = el)}>
+        {(state) => (
           <>
             <Field name="email" component={InputField} />
             <TComp title={state.values.email} />
@@ -174,8 +213,8 @@ describe("test Form", () => {
       }
     }
     const testRenderer = TestRenderer.create(
-      <FormComponent fieldRef={el => (form = el)}>
-        {state => (
+      <FormComponent fieldRef={(el) => (form = el)}>
+        {(state) => (
           <>
             <Field
               name="firstName"
@@ -196,7 +235,7 @@ describe("test Form", () => {
     const textEl = testInstance.findByType(TComp).instance;
     expect(textEl.props.title).toMatchObject({
       firstName: "Jacky",
-      lastName: "Wijaya"
+      lastName: "Wijaya",
     });
   });
 
@@ -223,8 +262,8 @@ describe("test Form", () => {
       }
     }
     const testRenderer = TestRenderer.create(
-      <FormComponent fieldRef={el => (form = el)}>
-        {state => (
+      <FormComponent fieldRef={(el) => (form = el)}>
+        {(state) => (
           <>
             <Field name="email" component={EmailField} />
             <FormComponent name="profile">
@@ -250,21 +289,21 @@ describe("test Form", () => {
       email: "jacky.wijaya@traveloka.com",
       profile: {
         first: "jacky",
-        last: "wijaya"
-      }
+        last: "wijaya",
+      },
     });
     const dataEl = testInstance.findByType(TComp).instance;
     expect(dataEl.props.values).toMatchObject({
       email: "jacky.wijaya@traveloka.com",
       profile: {
         first: "jacky",
-        last: "wijaya"
-      }
+        last: "wijaya",
+      },
     });
   });
 
   it("[nested form] error should be passed", () => {
-    const required = value => (!!value ? null : "required");
+    const required = (value) => (!!value ? null : "required");
     let form = null;
     let formProfile = null;
     class EmailField extends React.Component<{ title: string }> {
@@ -293,12 +332,12 @@ describe("test Form", () => {
       }
     }
     const testRenderer = TestRenderer.create(
-      <FormComponent fieldRef={el => (form = el)}>
-        {state => (
+      <FormComponent fieldRef={(el) => (form = el)}>
+        {(state) => (
           <>
             <Field name="email" component={EmailField} />
-            <FormComponent name="profile" fieldRef={el => (formProfile = el)}>
-              {state2 => (
+            <FormComponent name="profile" fieldRef={(el) => (formProfile = el)}>
+              {(state2) => (
                 <>
                   <Field name="first" component={FirstField} rules={required} />
                   <Field name="last" component={LastField} rules={required} />
@@ -344,8 +383,8 @@ describe("test Form", () => {
     }
     let form = null;
     const testRenderer = TestRenderer.create(
-      <FormComponent fieldRef={el => (form = el)} array>
-        {state => (
+      <FormComponent fieldRef={(el) => (form = el)} array>
+        {(state) => (
           <>
             <Field name="0" component={FirstField} />
             <Field name="1" component={LastField} />
@@ -383,10 +422,10 @@ describe("test Form", () => {
     let form = null;
     const testRenderer = TestRenderer.create(
       <FormComponent
-        fieldRef={el => (form = el)}
-        normalize={value => Object.values(value)}
+        fieldRef={(el) => (form = el)}
+        normalize={(value) => Object.values(value)}
       >
-        {state => (
+        {(state) => (
           <>
             <Field name="first" component={FirstField} />
             <Field name="last" component={LastField} />
@@ -424,8 +463,8 @@ describe("test Form", () => {
     let form = null;
     const onChangeMock = jest.fn();
     const testRenderer = TestRenderer.create(
-      <FormComponent fieldRef={el => (form = el)} onChange={onChangeMock}>
-        {state => (
+      <FormComponent fieldRef={(el) => (form = el)} onChange={onChangeMock}>
+        {(state) => (
           <>
             <Field name="first" component={FirstField} defaultValue="jacky" />
             <Field name="last" component={LastField} defaultValue="wijaya" />
@@ -436,7 +475,7 @@ describe("test Form", () => {
     );
     expect(onChangeMock).toHaveBeenCalledWith({
       first: "jacky",
-      last: "wijaya"
+      last: "wijaya",
     });
     onChangeMock.mockClear();
     const testInstance = testRenderer.root;
@@ -445,7 +484,7 @@ describe("test Form", () => {
     firstEl.props.onChange("jeki");
     expect(onChangeMock).toHaveBeenCalledWith({
       first: "jeki",
-      last: "wijaya"
+      last: "wijaya",
     });
   });
 });

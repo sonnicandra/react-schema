@@ -5,7 +5,9 @@ import registerField from "./registerField";
 import isEqual from "lodash/isEqual";
 
 export type FieldProps<T = any> = {
-  component: React.ComponentType<FieldComponentProps<T> & {[key: string]: any}>;
+  component: React.ComponentType<
+    FieldComponentProps<T> & { [key: string]: any }
+  >;
   revalidateOnError?: boolean;
   validateOnChange?: boolean;
   normalize: (value: T) => T;
@@ -24,24 +26,34 @@ export type FieldState<T = any> = {
   error: ValidationResult;
 };
 
-class FieldComponent<T> extends React.Component<FieldProps<T>, FieldState<T>>
-  implements FieldInterface {
-  public static defaultProps: Pick<FieldProps, 'revalidateOnError' | 'validateOnChange' | 'normalize'> = {
+class FieldComponent<T>
+  extends React.Component<FieldProps<T>, FieldState<T>>
+  implements FieldInterface
+{
+  public static defaultProps: Pick<
+    FieldProps,
+    "revalidateOnError" | "validateOnChange" | "normalize"
+  > = {
     revalidateOnError: true,
     validateOnChange: false,
-    normalize: (value) => value
+    normalize: (value) => value,
   };
 
-  private _value: any = null; //deferred value, to handle async setState
-  private _error: any = null; //deferred error, to handle async setState
-  private _defaultValue: any = null; //deferred defaultValue, to handle async setState
+  private _value: any; //deferred value, to handle async setState
+  private _defaultValue: any; //deferred defaultValue, to handle async setState
+  private _error: any; //deferred error, to handle async setState
 
   constructor(props: any) {
     super(props);
+
+    this._value = props.normalize(props.value || props.defaultValue);
+    this._defaultValue = props.normalize(props.defaultValue);
+    this._error = null;
+
     this.state = {
-      value: props.normalize(props.value || props.defaultValue),
-      defaultValue: props.normalize(props.defaultValue),
-      error: null
+      value: this._value,
+      defaultValue: this._defaultValue,
+      error: this._error,
     };
   }
 
@@ -49,7 +61,7 @@ class FieldComponent<T> extends React.Component<FieldProps<T>, FieldState<T>>
     if (this.props.onChange) this.props.onChange(this.getValue());
   }
 
-  public componentDidUpdate(prevProps: FieldProps, prevState: FieldState) {
+  public componentDidUpdate(prevProps: FieldProps) {
     if (!isEqual(prevProps.value, this.props.value)) {
       this.setValue(this.props.value);
     }
@@ -79,22 +91,14 @@ class FieldComponent<T> extends React.Component<FieldProps<T>, FieldState<T>>
   };
 
   public getValue = (): any => {
-    if (this._value !== null) return this._value;
-    return this.state.value;
+    return this._value;
   };
 
   public setValue = (dirtyValue: any): void => {
     const value = this.props.normalize(dirtyValue);
 
-    this._value = value; // update deferred value
-    this.setState(
-      {
-        value
-      },
-      () => {
-        this._value = null; // clear deferred value
-      }
-    );
+    this._value = value;
+    this.setState({ value });
     const { revalidateOnError, validateOnChange } = this.props;
     if (validateOnChange || (revalidateOnError && this.getError())) {
       this.validate();
@@ -105,20 +109,12 @@ class FieldComponent<T> extends React.Component<FieldProps<T>, FieldState<T>>
   };
 
   public getError = () => {
-    if (this._error !== null) return this._error;
-    return this.state.error;
+    return this._error;
   };
 
   public setError = (error: ValidationResult) => {
     this._error = error;
-    this.setState(
-      {
-        error
-      },
-      () => {
-        this._error = null;
-      }
-    );
+    this.setState({ error });
     if (this.props.onError) {
       this.props.onError(error);
     }
@@ -136,27 +132,19 @@ class FieldComponent<T> extends React.Component<FieldProps<T>, FieldState<T>>
 
   public ucwords = (str?: string) => {
     if (!str) return;
-    return str.toLowerCase().replace(/\b[a-z]/g, letter => {
+    return str.toLowerCase().replace(/\b[a-z]/g, (letter) => {
       return letter.toUpperCase();
     });
   };
 
   public initialize = (value: any) => {
     this._defaultValue = value;
-    this.setState(
-      {
-        defaultValue: value
-      },
-      () => {
-        this._defaultValue = null;
-      }
-    );
+    this.setState({ defaultValue: value });
     this.setValue(value);
   };
 
   public getDefaultValue = () => {
-    if (this._defaultValue !== null) return this._defaultValue;
-    return this.state.defaultValue;
+    return this._defaultValue;
   };
 
   public isDirty = () => {

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.6](https://github.com/traveloka/react-schema/compare/v3.4.5...v3.4.6) (2022-05-27)
+
+
+### Bug Fixes
+
+* Inconsistent field state ([#95](https://github.com/traveloka/react-schema/issues/95)) ([a9c72e3](https://github.com/traveloka/react-schema/commit/a9c72e324709be14193bdcaadd4ea7954a603237))
+
+
+
+
+
 ## [3.4.5](https://github.com/traveloka/react-schema/compare/v3.4.5-alpha.0...v3.4.5) (2021-12-17)
 
 

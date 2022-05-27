@@ -1,6 +1,6 @@
 {
   "name": "@traveloka/react-schema-form",
-  "version": "3.4.5",
+  "version": "3.4.6",
   "main": "lib/index.js",
   "types": "./lib/index.d.ts",
   "scripts": {

@@ -13,7 +13,7 @@ export type ValueByName = {
 
 export interface FormFieldInterface {
   getValue: () => any,
-  getValues: () => any[],
+  getValues: () => { [name: string]: any },
   setValue: (value: any) => any,
   getError: () => FormFieldValidationResult | null,
   setError: (error: FormFieldValidationResult) => FormFieldValidationResult,
@@ -49,7 +49,7 @@ export interface FormInterface extends FormFieldInterface {
   notifyOnError: (name: string, error: ValidationResult) => void,
 
   getValue: () => any,
-  getValues: () => any[],
+  getValues: () => { [name: string]: any },
   setValue: (value: any) => any,
   getError: () => ValidationResultByName,
   setError: (error: FormFieldValidationResult) => ValidationResultByName,

@@ -198,7 +198,7 @@ import MyErrorableInput from './MyErrorableInput';
 | Methods                                                                         | Description                                                    |
 | ------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | `getValue() => ValueByFieldName`                                                | return form value by fieldName                                 |
-| `getValues() => ValueByFieldName[]`                                             | return all form value                                          |
+| `getValues() => {[FieldName: Value]}`                                             | return all form value                                          |
 | `setValue(newValue: ValueByFieldName) => ValueByFieldName`                      | set form value by fieldName                                    |
 | `getError() => ValidationResultByFieldName`                                     | return form error message by fieldName                         |
 | `setError(error: ValidationResultByFieldName) => ValidationResultByFieldName`   | set form error by fieldName                                    |
